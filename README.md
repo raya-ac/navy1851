@@ -10,7 +10,9 @@ this is for **vintage story 1.22.7**. it builds against the real game API and ha
 
 ## get it
 
-open [actions](https://github.com/raya-ac/navy1851/actions/workflows/build.yml), choose a successful build, and download its artifact. extract that outer download, then put the `navy1851-…-vs1.22.7.zip` inside your `VintagestoryData/Mods` folder. leave the mod zip intact.
+download the mod zip from [releases](https://github.com/raya-ac/navy1851/releases) and put it in your `VintagestoryData/Mods` folder. leave the zip intact.
+
+builds from individual commits are also available under [actions](https://github.com/raya-ac/navy1851/actions/workflows/build.yml). those downloads have an outer archive; extract it to get the mod zip.
 
 use the same version on the server and clients, and remove an older copy first. search creative inventory for **Colt 1851 Navy** and **Navy paper charge**.
 
