@@ -1,5 +1,10 @@
 # changelog
 
+## 0.1.4 — restart cooldown
+
+- the firing cooldown stays in memory now. restarting the game no longer leaves the gun waiting for a timestamp from the previous session.
+- clears the old saved cooldown when you hold the gun. loaded rounds stay intact.
+
 ## 0.1.3 — weapon hold and aiming
 
 corrected the grip mount and orientation using the vanilla falx reference, and removed the two-handed carry pose. right mouse now aims down sights; hold left mouse to fire. aimed shots settle over 0.4 seconds, while hip-fire stays less accurate. sneak + right mouse still reloads. removed the generic interaction and melee animations that twisted the gun away while aiming or firing, and raised the resting pose. aligned the sight pose in the Windows 1.22.3 client, reduced the upward kick, and removed the generic ready animation. reloading fills all missing chambers in one action, consuming only the available charges needed. this remains a prerelease while gameplay and multiplayer testing continues.

@@ -56,6 +56,9 @@ public sealed class ItemNavy : Item
             bool right = inWorld && entity.Controls.RightMouseDown;
             bool pressed = use.Controls.Update(left, right, entity.Controls.Sneak, now);
             if (api.Side != EnumAppSide.Server) continue;
+            // ElapsedMilliseconds restarts with the game; never save its cooldown deadline.
+            entity.Attributes.RemoveAttribute(NextShotKey);
+            entity.ActivityTimers.TryGetValue(NextShotKey, out long nextShot);
             if (pressed) api.World.PlaySoundAt(Sound(Rounds(use.Stack) > 0 ? "cock" : "empty"), entity, null, false, 12, 0.6f);
             if (use.Controls.CanLoad(Rounds(use.Stack), now))
             {
@@ -78,9 +81,9 @@ public sealed class ItemNavy : Item
                 }
             }
             if (use.Controls.Trigger is { } trigger &&
-                trigger.TryFire(Rounds(use.Stack), now, entity.Attributes.GetLong(NextShotKey), out int remaining))
+                trigger.TryFire(Rounds(use.Stack), now, nextShot, out int remaining))
             {
-                entity.Attributes.SetLong(NextShotKey, trigger.NextShot);
+                entity.ActivityTimers[NextShotKey] = trigger.NextShot;
                 use.Stack.Attributes.SetInt(RoundsKey, remaining);
                 slot.MarkDirty();
                 Fire(entity, use.Controls.Spread(now));
