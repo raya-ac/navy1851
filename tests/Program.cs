@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Navy1851;
 using Vintagestory.API.Common;
+using Vintagestory.API.Client;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
@@ -15,12 +16,16 @@ Check(Chamber.CanFire(1,350,1000,0), "A cocked round can fire");
 Check(!Chamber.CanFire(6,900,1000,1001), "Cooldown cannot be skipped");
 Check(Chamber.CanFire(6,900,1001,1001), "Cooldown boundary permits next shot");
 Check(!Chamber.CanLoad(6,10000) && !Chamber.CanLoad(0,1399), "Full and partial reloads are rejected");
+Check(Chamber.ReloadAmount(0, 20)==6, "Empty reload consumes six charges, not the entire stack");
+Check(Chamber.ReloadAmount(4, 20)==2, "Partial reload consumes only missing chambers");
+Check(Chamber.ReloadAmount(2, 3)==3, "Limited ammunition loads only what is available");
+Check(Chamber.ReloadAmount(6, 20)==0 && Chamber.ReloadAmount(0, 0)==0, "Full cylinder and no ammunition consume nothing");
 int ammo=6,rounds=0;
 for(int i=0;i<6;i++) if(Chamber.CanLoad(rounds,1400)){ammo--;rounds++;}
 Check(rounds==6 && ammo==0, "Six completed loads consume six charges");
 for(int i=0;i<6;i++){Check(Chamber.CanFire(rounds,900,10000+i*700,10000+i*700),"Loaded shot");rounds--;}
 Check(!Chamber.CanFire(rounds,900,20000,0),"Seventh shot is blocked");
-// Exercise the same held-trigger state machine used by OnHeldInteractStep.
+// Exercise the same held-trigger state machine used by the held-control tick.
 var heldTrigger = new FiringCycle(1000);
 int cylinder = 6, fired = 0;
 var shotTimes = new List<long>();
@@ -45,6 +50,20 @@ var switched = new FiringCycle(0);
 Check(!switched.TryFire(6,350,700,out _) && switched.TryFire(6,700,700,out _), "A new hold respects actor-wide cooldown");
 var empty = new FiringCycle(0);
 Check(!empty.TryFire(0,1000,0,out _) && !empty.Active, "Starting empty terminates the firing cycle");
+var aimControls = new WeaponControls();
+aimControls.Update(false, true, false, 100);
+Check(aimControls.Trigger == null, "Right mouse alone never fires");
+Check(aimControls.Spread(100) == WeaponControls.HipSpread, "Aiming must settle before accuracy improves");
+Check(Math.Abs(aimControls.Spread(500)-WeaponControls.SightedSpread)<0.00001f, "Settled sights provide tighter spread");
+aimControls.Update(true,true,false,500);
+Check(aimControls.Aiming && aimControls.Trigger != null, "Both mouse buttons aim and fire simultaneously");
+aimControls.Update(true,false,false,1000);
+Check(aimControls.Spread(1000)==WeaponControls.HipSpread && aimControls.Trigger != null, "Releasing aim restores hip spread while trigger remains held");
+aimControls.Update(true,true,true,1200);
+Check(aimControls.Reloading && !aimControls.Aiming && aimControls.Trigger==null, "Reload cancels firing and aiming");
+Check(!aimControls.CanLoad(0,2599) && aimControls.CanLoad(0,2600), "Reload still requires a complete interval");
+aimControls.Update(false,false,false,2700);
+Check(!aimControls.Reloading && aimControls.Trigger==null, "Released inputs stop reload and fire");
 var attributes=new TreeAttribute();attributes.SetInt("navy1851:rounds",4);
 using(var stream=new MemoryStream()){
  using(var writer=new BinaryWriter(stream,System.Text.Encoding.UTF8,true)) attributes.ToBytes(writer);
@@ -52,6 +71,8 @@ using(var stream=new MemoryStream()){
  Check(restored.GetInt("navy1851:rounds")==4,"Rounds survive the actual API attribute binary roundtrip");
 }
 string root=Path.GetFullPath(args[0]);
+string targetVersion=JObject.Parse(File.ReadAllText(Path.Combine(root,"modinfo.json")))["dependencies"]!["game"]!.ToString();
+Check(typeof(Item).Assembly.GetName().Version!.ToString(3) == targetVersion, "Checks run against the exact game version declared in modinfo");
 var log=DispatchProxy.Create<ILogger, Stub>();
 ((Stub)(object)log).Handler=(m,a)=>{if(m.Name is "Error" or "Fatal" or "Warning")throw new Exception(m.Name+": "+string.Join(" ",a??[]));return null;};
 var allItems=new Dictionary<string,Item>();
@@ -99,6 +120,28 @@ foreach(string path in Directory.GetFiles(Path.Combine(root,"assets/navy1851/ite
   Check(File.Exists(Path.Combine(root,"assets/navy1851/textures/"+tex+".png")),"Item points to shipped PNG");
  }
 }
+// Reproduce the engine's hand matrix: origin, scale, attachment/translation,
+// attachment/rotation, negative origin. The physical grip must stay at the hand.
+var gunJson = JObject.Parse(File.ReadAllText(Path.Combine(root, "assets/navy1851/itemtypes/revolver.json")));
+var hand = gunJson["tpHandTransform"]!.ToObject<ModelTransform>()!;
+var grip = new Vec4f(3.25f/16, 6.3f/16, 8f/16, 1);
+foreach (float roll in new float[] { -20, 0, 30 })
+{
+    var matrix = new Matrixf().Identity()
+        .Translate(hand.Origin.X, hand.Origin.Y, hand.Origin.Z)
+        .Scale(hand.ScaleXYZ.X, hand.ScaleXYZ.Y, hand.ScaleXYZ.Z)
+        .Translate(hand.Translation.X, hand.Translation.Y, hand.Translation.Z)
+        .Rotate(hand.Rotation.X * GameMath.DEG2RAD, (hand.Rotation.Y-180) * GameMath.DEG2RAD, (hand.Rotation.Z+roll) * GameMath.DEG2RAD)
+        .Translate(-hand.Origin.X, -hand.Origin.Y, -hand.Origin.Z);
+    var palm = matrix.TransformVector(grip);
+    Check(Math.Abs(palm.X)<0.00001 && Math.Abs(palm.Y)<0.00001 && Math.Abs(palm.Z)<0.00001,
+        "The grip stays at the hand attachment when the gun rotates");
+}
+Check(WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.Opaque), "First-person hands retain the calibrated view pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.ThirdPerson, EnumRenderStage.Opaque), "Third-person body uses the hand attachment pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.Overhead, EnumRenderStage.Opaque), "Overhead camera uses the hand attachment pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.ShadowNear) &&
+      !WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.ShadowFar), "Both shadows use the body attachment pose");
 Console.WriteLine($"PASS: {assertions} assertions. API assembly: {typeof(Item).Assembly.GetName().Version}");
 Console.WriteLine("These offline checks do not establish in-game input, raycast, sound, or hand-transform acceptance.");
 public class Stub:DispatchProxy{

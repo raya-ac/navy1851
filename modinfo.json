@@ -2,11 +2,15 @@
   "type": "code",
   "modid": "navy1851",
   "name": "Navy 1851",
-  "authors": ["Ari"],
+  "authors": [
+    "Ari"
+  ],
   "description": "A Colt 1851 Navy-inspired six-shooter with walnut, engraved steel, and aged brass.",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "side": "Universal",
   "requiredOnClient": true,
   "requiredOnServer": true,
-  "dependencies": { "game": "1.22.7" }
+  "dependencies": {
+    "game": "1.22.7"
+  }
 }

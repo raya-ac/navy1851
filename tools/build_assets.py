@@ -199,18 +199,14 @@ item={
  'code':'revolver','class':'Navy1851Revolver','maxstacksize':1,
  'tags':['weapon','weapon-ranged'], 'creativeinventory':{'general':['*'],'items':['*'],'tools':['*']},
  'shape':{'base':'navy1851:item/navy1851'},'textures':{k:{'base':v} for k,v in textures.items()},
- 'heldPriorityInteract':True,'heldTpIdleAnimation':'holdbothhands','heldRightTpIdleAnimation':'holdbothhands',
- 'attributes':{'damage':10,'damageTier':2,'range':40,'heldItemPitchFollow':1},
+ 'heldPriorityInteract':True,
+ 'attributes':{'damage': 10, 'damageTier': 2, 'range': 40, 'heldItemPitchFollow': 1, 'firstPersonTransform': {'translation': {'x': -1.059585, 'y': -0.05, 'z': -0.623355}, 'rotation': {'x': -5, 'y': -2, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62}, 'aimTransform': {'translation': {'x': -1.06, 'y': 0.28, 'z': -0.4}, 'rotation': {'x': 0, 'y': 0, 'z': -10}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62}},
  'guiTransform':{'translation':{'x':-0.1,'y':0,'z':0},'rotation':{'x':0,'y':-22,'z':-28},'origin':{'x':.94,'y':.5,'z':.5},'scale':.65},
- 'tpHandTransform':{'translation':{'x':-.35,'y':-.2,'z':-.65},'rotation':{'x':0,'y':90,'z':-8},'origin':{'x':.36,'y':.45,'z':.5},'scale':.70},
+ 'tpHandTransform':{'translation': {'x': -0.3276209677419355, 'y': -0.6350806451612903, 'z': -0.8064516129032259}, 'rotation': {'x': -5, 'y': -2, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62},
  'groundTransform':{'translation':{'x':0,'y':0,'z':0},'rotation':{'x':90,'y':0,'z':0},'origin':{'x':.94,'y':.5,'z':.5},'scale':1.5}}
 (ASSETS/'itemtypes/revolver.json').write_text(json.dumps(item,indent=2)+'\n')
 (ASSETS/'itemtypes/papercharge.json').write_text(json.dumps({'code':'papercharge','maxstacksize':64,'creativeinventory':{'general':['*'],'items':['*']},'shape':{'base':'navy1851:item/papercharge'},'textures':item['textures'],'guiTransform':{'rotation':{'x':-15,'y':-25,'z':-10},'scale':1.6}},indent=2)+'\n')
-lang={'item-revolver':'Colt 1851 Navy','item-papercharge':'Navy paper charge','rounds':'Loaded: {0} / {1}',
-'description':'Hold right mouse to cock and keep firing until empty. Release to stop. Sneak + hold right mouse to load one charge at a time.',
-'help-fire':'Hold to fire until empty; release to stop','help-reload':'Load paper charges',
-'itemdesc-revolver':'An 1851 Navy-inspired revolver. Six chambers, blued octagonal barrel, engraved cylinder, walnut grip, and aged brass. Uses simplified paper charges.',
-'itemdesc-papercharge':'One game ammunition charge for the Navy revolver. Keep these in your inventory, then sneak + hold right mouse to reload.'}
+lang={'item-revolver': 'Colt 1851 Navy', 'item-papercharge': 'Navy paper charge', 'rounds': 'Loaded: {0} / {1}', 'description': 'Hold left mouse to fire. Hold right mouse to aim down the sights for a tighter shot. Sneak + right mouse to reload.', 'help-fire': 'Hold to fire; release to stop', 'help-reload': 'Load paper charges', 'itemdesc-revolver': 'An 1851 Navy-inspired revolver. Six chambers, blued octagonal barrel, engraved cylinder, walnut grip, and aged brass. Uses simplified paper charges.', 'itemdesc-papercharge': 'One game ammunition charge for the Navy revolver. Keep these in your inventory, then sneak + hold right mouse to reload.', 'help-aim': 'Aim down sights'}
 (ASSETS/'lang/en.json').write_text(json.dumps(lang,indent=2)+'\n')
 # Abstract game recipes, using actual 1.22.7 resource identifiers.
 recipes={
