@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Navy1851;
 using Vintagestory.API.Common;
+using Vintagestory.API.Client;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
@@ -119,6 +120,28 @@ foreach(string path in Directory.GetFiles(Path.Combine(root,"assets/navy1851/ite
   Check(File.Exists(Path.Combine(root,"assets/navy1851/textures/"+tex+".png")),"Item points to shipped PNG");
  }
 }
+// Reproduce the engine's hand matrix: origin, scale, attachment/translation,
+// attachment/rotation, negative origin. The physical grip must stay at the hand.
+var gunJson = JObject.Parse(File.ReadAllText(Path.Combine(root, "assets/navy1851/itemtypes/revolver.json")));
+var hand = gunJson["tpHandTransform"]!.ToObject<ModelTransform>()!;
+var grip = new Vec4f(3.25f/16, 6.3f/16, 8f/16, 1);
+foreach (float roll in new float[] { -20, 0, 30 })
+{
+    var matrix = new Matrixf().Identity()
+        .Translate(hand.Origin.X, hand.Origin.Y, hand.Origin.Z)
+        .Scale(hand.ScaleXYZ.X, hand.ScaleXYZ.Y, hand.ScaleXYZ.Z)
+        .Translate(hand.Translation.X, hand.Translation.Y, hand.Translation.Z)
+        .Rotate(hand.Rotation.X * GameMath.DEG2RAD, (hand.Rotation.Y-180) * GameMath.DEG2RAD, (hand.Rotation.Z+roll) * GameMath.DEG2RAD)
+        .Translate(-hand.Origin.X, -hand.Origin.Y, -hand.Origin.Z);
+    var palm = matrix.TransformVector(grip);
+    Check(Math.Abs(palm.X)<0.00001 && Math.Abs(palm.Y)<0.00001 && Math.Abs(palm.Z)<0.00001,
+        "The grip stays at the hand attachment when the gun rotates");
+}
+Check(WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.Opaque), "First-person hands retain the calibrated view pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.ThirdPerson, EnumRenderStage.Opaque), "Third-person body uses the hand attachment pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.Overhead, EnumRenderStage.Opaque), "Overhead camera uses the hand attachment pose");
+Check(!WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.ShadowNear) &&
+      !WeaponPose.UseViewTransform(EnumCameraMode.FirstPerson, EnumRenderStage.ShadowFar), "Both shadows use the body attachment pose");
 Console.WriteLine($"PASS: {assertions} assertions. API assembly: {typeof(Item).Assembly.GetName().Version}");
 Console.WriteLine("These offline checks do not establish in-game input, raycast, sound, or hand-transform acceptance.");
 public class Stub:DispatchProxy{

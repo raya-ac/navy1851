@@ -21,12 +21,14 @@ public sealed class ItemNavy : Item
         public readonly WeaponControls Controls = new();
     }
     private ModelTransform? aimTransform;
+    private ModelTransform? firstPersonTransform;
     private static int Rounds(ItemStack stack) => Chamber.Clamp(stack.Attributes.GetInt(RoundsKey));
     private static AssetLocation Sound(string name) => new("navy1851", "sounds/" + name);
 
     public override void OnLoaded(ICoreAPI coreApi)
     {
         base.OnLoaded(coreApi);
+        firstPersonTransform = Attributes["firstPersonTransform"].AsObject<ModelTransform>();
         aimTransform = Attributes["aimTransform"].AsObject<ModelTransform>();
         cleanupListener = coreApi.Event.RegisterGameTickListener(TickHeldControls, 20);
     }
@@ -171,7 +173,8 @@ public sealed class ItemNavy : Item
     {
         base.OnBeforeRender(capi, stack, target, ref info);
         if (target != EnumItemRenderTarget.HandTp || !ReferenceEquals(capi.World.Player.InventoryManager.ActiveHotbarSlot.Itemstack, stack)) return;
-        info.Transform = info.Transform.Clone();
+        if (!WeaponPose.UseViewTransform(capi.World.Player.CameraMode, capi.Render.CurrentRenderStage)) return;
+        info.Transform = (firstPersonTransform ?? info.Transform).Clone();
         long now = capi.World.ElapsedMilliseconds;
         int rounds = Rounds(stack);
         int previousRounds = stack.TempAttributes.GetInt("navy1851:seenRounds", rounds);

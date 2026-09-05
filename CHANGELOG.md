@@ -1,5 +1,10 @@
 # changelog
 
+## 0.1.5 — third-person attachment
+
+- the grip sits at the player hand attachment point in third person.
+- first-person hip and sight offsets are separate now, so aiming does not pull the gun away from the body or its shadow.
+
 ## 0.1.4 — restart cooldown
 
 - the firing cooldown stays in memory now. restarting the game no longer leaves the gun waiting for a timestamp from the previous session.
