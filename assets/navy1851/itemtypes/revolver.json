@@ -1,0 +1,115 @@
+{
+  "code": "revolver",
+  "class": "Navy1851Revolver",
+  "maxstacksize": 1,
+  "tags": [
+    "weapon",
+    "weapon-ranged"
+  ],
+  "creativeinventory": {
+    "general": [
+      "*"
+    ],
+    "items": [
+      "*"
+    ],
+    "tools": [
+      "*"
+    ]
+  },
+  "shape": {
+    "base": "navy1851:item/navy1851"
+  },
+  "textures": {
+    "blue": {
+      "base": "navy1851:item/blue"
+    },
+    "edge": {
+      "base": "navy1851:item/edge"
+    },
+    "brass": {
+      "base": "navy1851:item/brass"
+    },
+    "walnut": {
+      "base": "navy1851:item/walnut"
+    },
+    "case": {
+      "base": "navy1851:item/case"
+    },
+    "black": {
+      "base": "navy1851:item/black"
+    },
+    "paper": {
+      "base": "navy1851:item/paper"
+    },
+    "engraving": {
+      "base": "navy1851:item/engraving"
+    },
+    "mark": {
+      "base": "navy1851:item/mark"
+    }
+  },
+  "heldPriorityInteract": true,
+  "heldTpIdleAnimation": "holdbothhands",
+  "heldRightTpIdleAnimation": "holdbothhands",
+  "attributes": {
+    "damage": 10,
+    "damageTier": 2,
+    "range": 40,
+    "heldItemPitchFollow": 1
+  },
+  "guiTransform": {
+    "translation": {
+      "x": -0.1,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": 0,
+      "y": -22,
+      "z": -28
+    },
+    "origin": {
+      "x": 0.94,
+      "y": 0.5,
+      "z": 0.5
+    },
+    "scale": 0.65
+  },
+  "tpHandTransform": {
+    "translation": {
+      "x": -0.35,
+      "y": -0.2,
+      "z": -0.65
+    },
+    "rotation": {
+      "x": 0,
+      "y": 90,
+      "z": -8
+    },
+    "origin": {
+      "x": 0.36,
+      "y": 0.45,
+      "z": 0.5
+    },
+    "scale": 0.7
+  },
+  "groundTransform": {
+    "translation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": 90,
+      "y": 0,
+      "z": 0
+    },
+    "origin": {
+      "x": 0.94,
+      "y": 0.5,
+      "z": 0.5
+    },
+    "scale": 1.5
+  }
+}

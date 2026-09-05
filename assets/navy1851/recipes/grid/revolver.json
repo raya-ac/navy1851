@@ -1,0 +1,23 @@
+{
+  "ingredientPattern": "III\tBIB\t_P_",
+  "width": 3,
+  "height": 3,
+  "ingredients": {
+    "I": {
+      "type": "item",
+      "code": "game:ingot-iron"
+    },
+    "B": {
+      "type": "item",
+      "code": "game:ingot-brass"
+    },
+    "P": {
+      "type": "item",
+      "code": "game:plank-walnut"
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "navy1851:revolver"
+  }
+}

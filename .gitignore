@@ -1,0 +1,16 @@
+# builds and downloaded game references
+bin/
+obj/
+tests/bin/
+tests/obj/
+dist/
+work/
+*.dll
+*.pdb
+*.zip
+
+# local editor and OS files
+*.user
+.DS_Store
+__pycache__/
+*.pyc

@@ -1,0 +1,25 @@
+{
+  "ingredientPattern": "IFP",
+  "width": 3,
+  "height": 1,
+  "shapeless": true,
+  "ingredients": {
+    "I": {
+      "type": "item",
+      "code": "game:ingot-copper"
+    },
+    "F": {
+      "type": "item",
+      "code": "game:flaxfibers"
+    },
+    "P": {
+      "type": "item",
+      "code": "game:blastingpowder"
+    }
+  },
+  "output": {
+    "type": "item",
+    "code": "navy1851:papercharge",
+    "quantity": 12
+  }
+}

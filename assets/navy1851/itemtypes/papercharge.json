@@ -1,0 +1,52 @@
+{
+  "code": "papercharge",
+  "maxstacksize": 64,
+  "creativeinventory": {
+    "general": [
+      "*"
+    ],
+    "items": [
+      "*"
+    ]
+  },
+  "shape": {
+    "base": "navy1851:item/papercharge"
+  },
+  "textures": {
+    "blue": {
+      "base": "navy1851:item/blue"
+    },
+    "edge": {
+      "base": "navy1851:item/edge"
+    },
+    "brass": {
+      "base": "navy1851:item/brass"
+    },
+    "walnut": {
+      "base": "navy1851:item/walnut"
+    },
+    "case": {
+      "base": "navy1851:item/case"
+    },
+    "black": {
+      "base": "navy1851:item/black"
+    },
+    "paper": {
+      "base": "navy1851:item/paper"
+    },
+    "engraving": {
+      "base": "navy1851:item/engraving"
+    },
+    "mark": {
+      "base": "navy1851:item/mark"
+    }
+  },
+  "guiTransform": {
+    "rotation": {
+      "x": -15,
+      "y": -25,
+      "z": -10
+    },
+    "scale": 1.6
+  }
+}
