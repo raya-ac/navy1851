@@ -100,6 +100,10 @@ public sealed class ItemNavy : Item
     public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent entity,
         BlockSelection blockSel, EntitySelection entitySel) { }
 
+    // The generic use/hit poses twist the weapon away from the sights.
+    public override string GetHeldTpUseAnimation(ItemSlot slot, Entity entity) => null!;
+    public override string GetHeldTpHitAnimation(ItemSlot slot, Entity entity) => null!;
+
     private static ItemSlot? FindAmmo(EntityAgent entity)
     {
         ItemSlot? found = null;

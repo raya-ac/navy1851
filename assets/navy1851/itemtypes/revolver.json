@@ -57,13 +57,13 @@
     "heldItemPitchFollow": 0.9,
     "aimTransform": {
       "translation": {
-        "x": -0.75,
-        "y": -0.25,
-        "z": -0.85
+        "x": -1.06,
+        "y": 0.1,
+        "z": -0.4
       },
       "rotation": {
         "x": -5,
-        "y": -70,
+        "y": 15,
         "z": 0
       },
       "origin": {
@@ -95,7 +95,7 @@
   "tpHandTransform": {
     "translation": {
       "x": -1.059585,
-      "y": -0.403073,
+      "y": -0.05,
       "z": -0.623355
     },
     "rotation": {

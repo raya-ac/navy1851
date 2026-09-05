@@ -200,9 +200,9 @@ item={
  'tags':['weapon','weapon-ranged'], 'creativeinventory':{'general':['*'],'items':['*'],'tools':['*']},
  'shape':{'base':'navy1851:item/navy1851'},'textures':{k:{'base':v} for k,v in textures.items()},
  'heldPriorityInteract':True,
- 'attributes':{'damage': 10, 'damageTier': 2, 'range': 40, 'heldItemPitchFollow': 0.9, 'aimTransform': {'translation': {'x': -0.75, 'y': -0.25, 'z': -0.85}, 'rotation': {'x': -5, 'y': -70, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62}},
+ 'attributes':{'damage': 10, 'damageTier': 2, 'range': 40, 'heldItemPitchFollow': 0.9, 'aimTransform': {'translation': {'x': -1.06, 'y': 0.1, 'z': -0.4}, 'rotation': {'x': -5, 'y': 15, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62}},
  'guiTransform':{'translation':{'x':-0.1,'y':0,'z':0},'rotation':{'x':0,'y':-22,'z':-28},'origin':{'x':.94,'y':.5,'z':.5},'scale':.65},
- 'tpHandTransform':{'translation': {'x': -1.059585, 'y': -0.403073, 'z': -0.623355}, 'rotation': {'x': -5, 'y': -2, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62},
+ 'tpHandTransform':{'translation': {'x': -1.059585, 'y': -0.05, 'z': -0.623355}, 'rotation': {'x': -5, 'y': -2, 'z': 0}, 'origin': {'x': 0.203125, 'y': 0.39375, 'z': 0.5}, 'scale': 0.62},
  'groundTransform':{'translation':{'x':0,'y':0,'z':0},'rotation':{'x':90,'y':0,'z':0},'origin':{'x':.94,'y':.5,'z':.5},'scale':1.5}}
 (ASSETS/'itemtypes/revolver.json').write_text(json.dumps(item,indent=2)+'\n')
 (ASSETS/'itemtypes/papercharge.json').write_text(json.dumps({'code':'papercharge','maxstacksize':64,'creativeinventory':{'general':['*'],'items':['*']},'shape':{'base':'navy1851:item/papercharge'},'textures':item['textures'],'guiTransform':{'rotation':{'x':-15,'y':-25,'z':-10},'scale':1.6}},indent=2)+'\n')
