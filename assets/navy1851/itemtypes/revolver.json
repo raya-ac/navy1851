@@ -50,13 +50,29 @@
     }
   },
   "heldPriorityInteract": true,
-  "heldTpIdleAnimation": "holdbothhands",
-  "heldRightTpIdleAnimation": "holdbothhands",
   "attributes": {
     "damage": 10,
     "damageTier": 2,
     "range": 40,
-    "heldItemPitchFollow": 1
+    "heldItemPitchFollow": 0.9,
+    "aimTransform": {
+      "translation": {
+        "x": -0.75,
+        "y": -0.25,
+        "z": -0.85
+      },
+      "rotation": {
+        "x": -5,
+        "y": -70,
+        "z": 0
+      },
+      "origin": {
+        "x": 0.203125,
+        "y": 0.39375,
+        "z": 0.5
+      },
+      "scale": 0.62
+    }
   },
   "guiTransform": {
     "translation": {
@@ -78,21 +94,21 @@
   },
   "tpHandTransform": {
     "translation": {
-      "x": -0.35,
-      "y": -0.2,
-      "z": -0.65
+      "x": -1.059585,
+      "y": -0.403073,
+      "z": -0.623355
     },
     "rotation": {
-      "x": 0,
-      "y": 90,
-      "z": -8
+      "x": -5,
+      "y": -2,
+      "z": 0
     },
     "origin": {
-      "x": 0.36,
-      "y": 0.45,
+      "x": 0.203125,
+      "y": 0.39375,
       "z": 0.5
     },
-    "scale": 0.7
+    "scale": 0.62
   },
   "groundTransform": {
     "translation": {

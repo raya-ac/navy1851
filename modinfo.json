@@ -6,7 +6,7 @@
     "Ari"
   ],
   "description": "A Colt 1851 Navy-inspired six-shooter with walnut, engraved steel, and aged brass.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "side": "Universal",
   "requiredOnClient": true,
   "requiredOnServer": true,

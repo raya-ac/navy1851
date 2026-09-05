@@ -14,29 +14,21 @@ public sealed class ItemNavy : Item
     private const string NextShotKey = "navy1851:nextshot";
     private readonly Dictionary<long, Use> uses = new();
     private long cleanupListener;
-    private sealed class Use(ItemSlot slot, long now, bool reload)
+    private sealed class Use(ItemSlot slot)
     {
         public readonly ItemSlot Slot = slot;
         public readonly ItemStack Stack = slot.Itemstack!;
-        public readonly long Started = now;
-        public long LastLoad = now;
-        public readonly bool Reload = reload;
-        public readonly FiringCycle Firing = new(now);
+        public readonly WeaponControls Controls = new();
     }
+    private ModelTransform? aimTransform;
     private static int Rounds(ItemStack stack) => Chamber.Clamp(stack.Attributes.GetInt(RoundsKey));
     private static AssetLocation Sound(string name) => new("navy1851", "sounds/" + name);
 
     public override void OnLoaded(ICoreAPI coreApi)
     {
         base.OnLoaded(coreApi);
-        cleanupListener = coreApi.Event.RegisterGameTickListener(_ =>
-        {
-            foreach (long id in uses.Keys.ToArray())
-            {
-                var entity = coreApi.World.GetEntityById(id) as EntityPlayer;
-                if (entity == null || !entity.Alive || !Valid(entity, uses[id])) EndUse(id);
-            }
-        }, 1000);
+        aimTransform = Attributes["aimTransform"].AsObject<ModelTransform>();
+        cleanupListener = coreApi.Event.RegisterGameTickListener(TickHeldControls, 20);
     }
 
     public override void OnUnloaded(ICoreAPI coreApi)
@@ -46,72 +38,67 @@ public sealed class ItemNavy : Item
         base.OnUnloaded(coreApi);
     }
 
-    private static bool Valid(EntityAgent entity, Use use)
-        => entity.Alive && ReferenceEquals(use.Slot.Itemstack, use.Stack)
-           && entity is EntityPlayer player
-           && ReferenceEquals(player.Player.InventoryManager.ActiveHotbarSlot, use.Slot);
-
-    public override void OnHeldInteractStart(ItemSlot slot, EntityAgent entity, BlockSelection blockSel,
-        EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling)
+    private void TickHeldControls(float dt)
     {
-        handling = EnumHandHandling.PreventDefault;
-        if (!firstEvent || slot.Empty || entity is not EntityPlayer || !entity.Alive) return;
-        EndUse(entity.EntityId);
-        uses[entity.EntityId] = new Use(slot, entity.World.ElapsedMilliseconds, entity.Controls.Sneak);
-        if (entity.World.Side == EnumAppSide.Server && !entity.Controls.Sneak)
-            entity.World.PlaySoundAt(Sound(Rounds(slot.Itemstack) > 0 ? "cock" : "empty"), entity, null, false, 12, 0.6f);
-    }
-
-    public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent entity,
-        BlockSelection blockSel, EntitySelection entitySel)
-    {
-        if (!uses.TryGetValue(entity.EntityId, out var use) || !Valid(entity, use)) return false;
-        if (!use.Reload)
+        var present = new HashSet<long>();
+        foreach (var player in api.World.AllOnlinePlayers)
         {
-            if (entity.World.Side == EnumAppSide.Server &&
-                use.Firing.TryFire(Rounds(use.Stack), entity.World.ElapsedMilliseconds,
-                    entity.Attributes.GetLong(NextShotKey), out int remaining))
+            var entity = player.Entity;
+            var slot = player.InventoryManager.ActiveHotbarSlot;
+            if (!entity.Alive || slot.Empty || !ReferenceEquals(slot.Itemstack.Collectible, this)) continue;
+            if (api is ICoreClientAPI client && player.PlayerUID != client.World.Player.PlayerUID) continue;
+            present.Add(entity.EntityId);
+            if (!uses.TryGetValue(entity.EntityId, out var use) || !ReferenceEquals(use.Stack, slot.Itemstack))
+                uses[entity.EntityId] = use = new Use(slot);
+            long now = api.World.ElapsedMilliseconds;
+            bool inWorld = api is not ICoreClientAPI capi || capi.Input.MouseGrabbed;
+            bool left = inWorld && entity.Controls.LeftMouseDown;
+            bool right = inWorld && entity.Controls.RightMouseDown;
+            bool pressed = use.Controls.Update(left, right, entity.Controls.Sneak, now);
+            if (api.Side != EnumAppSide.Server) continue;
+            if (pressed) api.World.PlaySoundAt(Sound(Rounds(use.Stack) > 0 ? "cock" : "empty"), entity, null, false, 12, 0.6f);
+            if (use.Controls.CanLoad(Rounds(use.Stack), now))
             {
-                entity.Attributes.SetLong(NextShotKey, use.Firing.NextShot);
-                use.Stack.Attributes.SetInt(RoundsKey, remaining);
-                use.Slot.MarkDirty();
-                Fire(entity, use.Stack, entity.World.ElapsedMilliseconds - use.Started);
+                var ammo = FindAmmo(entity);
+                if (ammo?.TakeOut(1) != null)
+                {
+                    ammo.MarkDirty();
+                    use.Stack.Attributes.SetInt(RoundsKey, Rounds(use.Stack) + 1);
+                    slot.MarkDirty();
+                    use.Controls.Loaded(now);
+                    api.World.PlaySoundAt(Sound("load"), entity, null, false, 12, 0.7f);
+                }
             }
-            // Keep the completed hold latched until release; do not restart on empty.
-            return true;
+            if (use.Controls.Trigger is { } trigger &&
+                trigger.TryFire(Rounds(use.Stack), now, entity.Attributes.GetLong(NextShotKey), out int remaining))
+            {
+                entity.Attributes.SetLong(NextShotKey, trigger.NextShot);
+                use.Stack.Attributes.SetInt(RoundsKey, remaining);
+                slot.MarkDirty();
+                Fire(entity, use.Controls.Spread(now));
+            }
         }
-        if (entity.World.Side == EnumAppSide.Client) return true;
-        long now = entity.World.ElapsedMilliseconds;
-        if (!Chamber.CanLoad(Rounds(use.Stack), now - use.LastLoad)) return Rounds(use.Stack) < Chamber.Capacity;
-        var ammo = FindAmmo(entity);
-        if (ammo == null) return false;
-        // One completed interval consumes exactly one inventory item, on the server.
-        if (ammo.TakeOut(1) == null) return false;
-        ammo.MarkDirty();
-        use.Stack.Attributes.SetInt(RoundsKey, Rounds(use.Stack) + 1);
-        use.Slot.MarkDirty();
-        use.LastLoad = now;
-        entity.World.PlaySoundAt(Sound("load"), entity, null, false, 12, 0.7f);
-        return Rounds(use.Stack) < Chamber.Capacity;
+        foreach (long id in uses.Keys.ToArray()) if (!present.Contains(id)) uses.Remove(id);
     }
 
+    // Default melee/block interactions are suppressed. The two in-world mouse-button
+    // bits are synchronized by the engine independently, so aiming never cancels fire.
+    public override void OnHeldAttackStart(ItemSlot slot, EntityAgent entity, BlockSelection blockSel,
+        EntitySelection entitySel, ref EnumHandHandling handling) => handling = EnumHandHandling.PreventDefault;
+    public override bool OnHeldAttackStep(float secondsUsed, ItemSlot slot, EntityAgent entity,
+        BlockSelection blockSel, EntitySelection entitySel) => true;
+    public override bool OnHeldAttackCancel(float secondsUsed, ItemSlot slot, EntityAgent entity,
+        BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason reason) => true;
+    public override void OnHeldAttackStop(float secondsUsed, ItemSlot slot, EntityAgent entity,
+        BlockSelection blockSel, EntitySelection entitySel) { }
+    public override void OnHeldInteractStart(ItemSlot slot, EntityAgent entity, BlockSelection blockSel,
+        EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling) => handling = EnumHandHandling.PreventDefault;
+    public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent entity,
+        BlockSelection blockSel, EntitySelection entitySel) => true;
     public override bool OnHeldInteractCancel(float secondsUsed, ItemSlot slot, EntityAgent entity,
-        BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason reason)
-    {
-        EndUse(entity.EntityId);
-        return true;
-    }
-
+        BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason reason) => true;
     public override void OnHeldInteractStop(float secondsUsed, ItemSlot slot, EntityAgent entity,
-        BlockSelection blockSel, EntitySelection entitySel)
-    {
-        EndUse(entity.EntityId);
-    }
-
-    private void EndUse(long entityId)
-    {
-        if (uses.Remove(entityId, out var use)) use.Firing.Stop();
-    }
+        BlockSelection blockSel, EntitySelection entitySel) { }
 
     private static ItemSlot? FindAmmo(EntityAgent entity)
     {
@@ -125,13 +112,12 @@ public sealed class ItemNavy : Item
         return found;
     }
 
-    private void Fire(EntityAgent entity, ItemStack stack, long held)
+    private void Fire(EntityAgent entity, float spread)
     {
         var world = entity.World;
         var player = ((EntityPlayer)entity).Player;
         // Game-unit tuning; this is a short-range hitscan weapon, not a ballistics simulation.
         float range = Attributes["range"].AsFloat(40);
-        float spread = held >= 900 ? 0.003f : 0.016f;
         float pitch = entity.Pos.Pitch + (float)(world.Rand.NextDouble() - 0.5) * spread;
         float yaw = entity.Pos.Yaw + (float)(world.Rand.NextDouble() - 0.5) * spread;
         Vec3d eye = entity.Pos.XYZ.Add(0, entity.LocalEyePos.Y, 0);
@@ -177,22 +163,26 @@ public sealed class ItemNavy : Item
         stack.TempAttributes.SetInt("navy1851:seenRounds", rounds);
         long kickTime = stack.TempAttributes.GetLong("navy1851:kick", -1000);
         float kick = Math.Max(0, 1 - (now - kickTime) / 240f);
-        info.Transform.Rotation.Z += kick * 13;
-        info.Transform.Translation.Z += kick * 0.08f;
         if (uses.TryGetValue(capi.World.Player.Entity.EntityId, out var use) && ReferenceEquals(use.Stack, stack))
         {
-            if (use.Reload)
+            if (use.Controls.Reloading)
             {
-                info.Transform.Rotation.X -= 24;
-                info.Transform.Rotation.Z += 16 + (float)Math.Sin((now - use.Started) / 180.0) * 3;
+                info.Transform.Rotation.X -= 18;
+                info.Transform.Rotation.Z += 12;
             }
-            else
+            else if (aimTransform != null)
             {
-                float aim = Math.Min(1, (now - use.Started) / 250f);
-                info.Transform.Translation.X -= 0.12f * aim;
-                info.Transform.Translation.Y += 0.05f * aim;
+                float amount = use.Controls.AimFraction(now);
+                info.Transform.Translation.X += (aimTransform.Translation.X - info.Transform.Translation.X) * amount;
+                info.Transform.Translation.Y += (aimTransform.Translation.Y - info.Transform.Translation.Y) * amount;
+                info.Transform.Translation.Z += (aimTransform.Translation.Z - info.Transform.Translation.Z) * amount;
+                info.Transform.Rotation.X += (aimTransform.Rotation.X - info.Transform.Rotation.X) * amount;
+                info.Transform.Rotation.Y += (aimTransform.Rotation.Y - info.Transform.Rotation.Y) * amount;
+                info.Transform.Rotation.Z += (aimTransform.Rotation.Z - info.Transform.Rotation.Z) * amount;
             }
         }
+        info.Transform.Rotation.Z += kick * 7;
+        info.Transform.Translation.Z += kick * 0.04f;
     }
 
     public override void GetHeldItemInfo(ItemSlot slot, StringBuilder text, IWorldAccessor world, bool withDebugInfo)
@@ -204,7 +194,8 @@ public sealed class ItemNavy : Item
 
     public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot slot) =>
     [
-        new() { ActionLangCode = "navy1851:help-fire", MouseButton = EnumMouseButton.Right },
+        new() { ActionLangCode = "navy1851:help-fire", MouseButton = EnumMouseButton.Left },
+        new() { ActionLangCode = "navy1851:help-aim", MouseButton = EnumMouseButton.Right },
         new() { ActionLangCode = "navy1851:help-reload", MouseButton = EnumMouseButton.Right, HotKeyCode = "sneak" }
     ];
 }

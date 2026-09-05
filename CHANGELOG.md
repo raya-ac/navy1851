@@ -1,5 +1,9 @@
 # changelog
 
+## 0.1.3 — weapon hold and aiming
+
+corrected the grip mount and orientation using the vanilla falx reference, and removed the two-handed carry pose. right mouse now aims down sights; hold left mouse to fire. aimed shots settle over 0.4 seconds, while hip-fire stays less accurate. sneak + right mouse still reloads.
+
 ## 0.1.2 — vintage story 1.22.3
 
 a separate compatibility build for vintage story 1.22.3, compiled and checked against its own official API assembly. same gun, six-round continuous fire and reloading. replace any older navy1851 zip before installing this one.
