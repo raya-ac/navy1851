@@ -206,12 +206,7 @@ item={
  'groundTransform':{'translation':{'x':0,'y':0,'z':0},'rotation':{'x':90,'y':0,'z':0},'origin':{'x':.94,'y':.5,'z':.5},'scale':1.5}}
 (ASSETS/'itemtypes/revolver.json').write_text(json.dumps(item,indent=2)+'\n')
 (ASSETS/'itemtypes/papercharge.json').write_text(json.dumps({'code':'papercharge','maxstacksize':64,'creativeinventory':{'general':['*'],'items':['*']},'shape':{'base':'navy1851:item/papercharge'},'textures':item['textures'],'guiTransform':{'rotation':{'x':-15,'y':-25,'z':-10},'scale':1.6}},indent=2)+'\n')
-lang={'item-revolver':'Colt 1851 Navy','item-papercharge':'Navy paper charge','rounds':'Loaded: {0} / {1}',
-'description':'Hold right mouse to cock and keep firing until empty. Release to stop. Sneak + hold right mouse to load one charge at a time.',
-'help-fire':'Hold to fire until empty; release to stop','help-reload':'Load paper charges',
-'itemdesc-revolver':'An 1851 Navy-inspired revolver. Six chambers, blued octagonal barrel, engraved cylinder, walnut grip, and aged brass. Uses simplified paper charges.',
-'itemdesc-papercharge':'One game ammunition charge for the Navy revolver. Keep these in your inventory, then sneak + hold right mouse to reload.'}
-lang.update({'description': 'Hold left mouse to fire. Hold right mouse to aim down the sights for a tighter shot. Sneak + right mouse to reload.', 'help-fire': 'Hold to fire; release to stop', 'help-aim': 'Aim down sights'})
+lang={'item-revolver': 'Colt 1851 Navy', 'item-papercharge': 'Navy paper charge', 'rounds': 'Loaded: {0} / {1}', 'description': 'Hold left mouse to fire. Hold right mouse to aim down the sights for a tighter shot. Sneak + right mouse to reload.', 'help-fire': 'Hold to fire; release to stop', 'help-reload': 'Load paper charges', 'itemdesc-revolver': 'An 1851 Navy-inspired revolver. Six chambers, blued octagonal barrel, engraved cylinder, walnut grip, and aged brass. Uses simplified paper charges.', 'itemdesc-papercharge': 'One game ammunition charge for the Navy revolver. Keep these in your inventory, then sneak + hold right mouse to reload.', 'help-aim': 'Aim down sights'}
 (ASSETS/'lang/en.json').write_text(json.dumps(lang,indent=2)+'\n')
 # Abstract game recipes, using actual 1.22.7 resource identifiers.
 recipes={

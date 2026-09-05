@@ -4,9 +4,9 @@
 
 i wanted a colt navy in vintage story, with a model that actually looked like one. this is my take on the 1851: a long octagonal barrel, engraved cylinder, brass frame and a curved walnut grip.
 
-it holds six rounds. hold left mouse and it keeps firing until you let go or run out. hold right mouse to aim down the sights for a tighter shot. sneak and hold right mouse to load it again, using only as many charges as it needs. the ammo count stays with the gun when you move it or save the world.
+it holds six rounds. hold left mouse and it keeps firing until you let go or run out. hold right mouse to aim down the sights for a tighter shot. sneak and hold right mouse to load it again, using only as many charges as it needs. the ammo count stays with the gun when you move it or save the world. the grip stays attached to the player in third person, with a separate first-person sight position.
 
-this branch is for **vintage story 1.22.3**. download the zip ending in `vs1.22.3.zip`; the 1.22.7 build is a separate download. it builds against the real game API and has automated checks. i've started testing the held model in the 1.22.3 Windows client. this is still a prerelease: sight alignment, continuous input and multiplayer need more testing.
+this branch is for **vintage story 1.22.3**. download the zip ending in `vs1.22.3.zip`; the 1.22.7 build is a separate download. it builds against the real game API and has automated checks. the held model, aiming, firing and reload have been checked in the 1.22.3 Windows client. multiplayer is still untested.
 
 ## get it
 
