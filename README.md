@@ -6,7 +6,7 @@ i wanted a colt navy in vintage story, with a model that actually looked like on
 
 it holds six rounds. hold left mouse and it keeps firing until you let go or run out. hold right mouse to aim down the sights for a tighter shot. sneak and hold right mouse to load it again, one charge at a time. the ammo count stays with the gun when you move it or save the world.
 
-this branch is for **vintage story 1.22.3**. download the zip ending in `vs1.22.3.zip`; the 1.22.7 build is a separate download. it builds against the real game API and has automated checks, but i haven't tested it in the game client yet. the hand placement and multiplayer behaviour still need that pass.
+this branch is for **vintage story 1.22.3**. download the zip ending in `vs1.22.3.zip`; the 1.22.7 build is a separate download. it builds against the real game API and has automated checks. i've started testing the held model in the 1.22.3 Windows client. this is still a prerelease: sight alignment, continuous input and multiplayer need more testing.
 
 ## get it
 
@@ -45,7 +45,7 @@ if you already have the game installed:
 python3 tools/build.py --game-path "/path/to/Vintagestory"
 ```
 
-on Windows, use `python` if `python3` isn't available. GitHub Actions runs the same build command on every push to `main`, on pull requests, and when started manually.
+on Windows, use `python` if `python3` isn't available. GitHub Actions runs the same build command on every push to `main` or `vs1.22.3`, on pull requests, and when started manually.
 
 ## the model
 

@@ -20,7 +20,7 @@ for(int i=0;i<6;i++) if(Chamber.CanLoad(rounds,1400)){ammo--;rounds++;}
 Check(rounds==6 && ammo==0, "Six completed loads consume six charges");
 for(int i=0;i<6;i++){Check(Chamber.CanFire(rounds,900,10000+i*700,10000+i*700),"Loaded shot");rounds--;}
 Check(!Chamber.CanFire(rounds,900,20000,0),"Seventh shot is blocked");
-// Exercise the same held-trigger state machine used by OnHeldInteractStep.
+// Exercise the same held-trigger state machine used by the held-control tick.
 var heldTrigger = new FiringCycle(1000);
 int cylinder = 6, fired = 0;
 var shotTimes = new List<long>();
