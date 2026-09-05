@@ -59,11 +59,19 @@ public sealed class ItemNavy : Item
             if (pressed) api.World.PlaySoundAt(Sound(Rounds(use.Stack) > 0 ? "cock" : "empty"), entity, null, false, 12, 0.6f);
             if (use.Controls.CanLoad(Rounds(use.Stack), now))
             {
-                var ammo = FindAmmo(entity);
-                if (ammo?.TakeOut(1) != null)
+                int loaded = 0;
+                int needed = Chamber.ReloadAmount(Rounds(use.Stack), Chamber.Capacity);
+                while (loaded < needed)
                 {
-                    ammo.MarkDirty();
-                    use.Stack.Attributes.SetInt(RoundsKey, Rounds(use.Stack) + 1);
+                    var ammo = FindAmmo(entity);
+                    var taken = ammo?.TakeOut(needed - loaded);
+                    if (taken == null || taken.StackSize <= 0) break;
+                    loaded += taken.StackSize;
+                    ammo!.MarkDirty();
+                }
+                if (loaded > 0)
+                {
+                    use.Stack.Attributes.SetInt(RoundsKey, Rounds(use.Stack) + loaded);
                     slot.MarkDirty();
                     use.Controls.Loaded(now);
                     api.World.PlaySoundAt(Sound("load"), entity, null, false, 12, 0.7f);
@@ -103,6 +111,7 @@ public sealed class ItemNavy : Item
     // The generic use/hit poses twist the weapon away from the sights.
     public override string GetHeldTpUseAnimation(ItemSlot slot, Entity entity) => null!;
     public override string GetHeldTpHitAnimation(ItemSlot slot, Entity entity) => null!;
+    public override string GetHeldReadyAnimation(ItemSlot slot, Entity entity, EnumHand hand) => null!;
 
     private static ItemSlot? FindAmmo(EntityAgent entity)
     {
@@ -185,8 +194,8 @@ public sealed class ItemNavy : Item
                 info.Transform.Rotation.Z += (aimTransform.Rotation.Z - info.Transform.Rotation.Z) * amount;
             }
         }
-        info.Transform.Rotation.Z += kick * 7;
-        info.Transform.Translation.Z += kick * 0.04f;
+        info.Transform.Rotation.Z += kick * 1.5f;
+        info.Transform.Translation.Z += kick * 0.01f;
     }
 
     public override void GetHeldItemInfo(ItemSlot slot, StringBuilder text, IWorldAccessor world, bool withDebugInfo)

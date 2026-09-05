@@ -10,6 +10,9 @@ public static class Chamber
     public static int Clamp(int rounds) => Math.Clamp(rounds, 0, Capacity);
     public static bool CanFire(int rounds, long held, long now, long nextShot)
         => Clamp(rounds) > 0 && held >= CockMilliseconds && now >= nextShot;
+    public static int ReloadAmount(int rounds, int available)
+        => Math.Min(Capacity - Clamp(rounds), Math.Max(0, available));
+
     public static bool CanLoad(int rounds, long held)
         => Clamp(rounds) < Capacity && held >= ReloadMilliseconds;
 }

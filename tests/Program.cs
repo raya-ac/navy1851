@@ -15,6 +15,10 @@ Check(Chamber.CanFire(1,350,1000,0), "A cocked round can fire");
 Check(!Chamber.CanFire(6,900,1000,1001), "Cooldown cannot be skipped");
 Check(Chamber.CanFire(6,900,1001,1001), "Cooldown boundary permits next shot");
 Check(!Chamber.CanLoad(6,10000) && !Chamber.CanLoad(0,1399), "Full and partial reloads are rejected");
+Check(Chamber.ReloadAmount(0, 20)==6, "Empty reload consumes six charges, not the entire stack");
+Check(Chamber.ReloadAmount(4, 20)==2, "Partial reload consumes only missing chambers");
+Check(Chamber.ReloadAmount(2, 3)==3, "Limited ammunition loads only what is available");
+Check(Chamber.ReloadAmount(6, 20)==0 && Chamber.ReloadAmount(0, 0)==0, "Full cylinder and no ammunition consume nothing");
 int ammo=6,rounds=0;
 for(int i=0;i<6;i++) if(Chamber.CanLoad(rounds,1400)){ammo--;rounds++;}
 Check(rounds==6 && ammo==0, "Six completed loads consume six charges");

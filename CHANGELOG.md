@@ -2,7 +2,7 @@
 
 ## 0.1.3 — weapon hold and aiming
 
-corrected the grip mount and orientation using the vanilla falx reference, and removed the two-handed carry pose. right mouse now aims down sights; hold left mouse to fire. aimed shots settle over 0.4 seconds, while hip-fire stays less accurate. sneak + right mouse still reloads. removed the generic interaction and melee animations that twisted the gun away while aiming or firing, and raised the resting pose. aligned the sight pose in the Windows 1.22.3 client. this remains a prerelease while gameplay and multiplayer testing continues.
+corrected the grip mount and orientation using the vanilla falx reference, and removed the two-handed carry pose. right mouse now aims down sights; hold left mouse to fire. aimed shots settle over 0.4 seconds, while hip-fire stays less accurate. sneak + right mouse still reloads. removed the generic interaction and melee animations that twisted the gun away while aiming or firing, and raised the resting pose. aligned the sight pose in the Windows 1.22.3 client, reduced the upward kick, and removed the generic ready animation. reloading fills all missing chambers in one action, consuming only the available charges needed. this remains a prerelease while gameplay and multiplayer testing continues.
 
 ## 0.1.2 — vintage story 1.22.3
 
