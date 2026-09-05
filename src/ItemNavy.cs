@@ -21,6 +21,8 @@ public sealed class ItemNavy : Item
         public readonly WeaponControls Controls = new();
     }
     private ModelTransform? aimTransform;
+    private ModelTransform? calibrationTransform;
+    private long nextCalibrationRead;
     private static int Rounds(ItemStack stack) => Chamber.Clamp(stack.Attributes.GetInt(RoundsKey));
     private static AssetLocation Sound(string name) => new("navy1851", "sounds/" + name);
 
@@ -40,6 +42,12 @@ public sealed class ItemNavy : Item
 
     private void TickHeldControls(float dt)
     {
+        if (api is ICoreClientAPI calibrationApi && api.World.ElapsedMilliseconds >= nextCalibrationRead)
+        {
+            nextCalibrationRead = api.World.ElapsedMilliseconds + 1000;
+            try { calibrationTransform = calibrationApi.LoadModConfig<ModelTransform>("navy1851-pose-test.json"); }
+            catch { calibrationTransform = null; }
+        }
         var present = new HashSet<long>();
         foreach (var player in api.World.AllOnlinePlayers)
         {
@@ -159,6 +167,11 @@ public sealed class ItemNavy : Item
     {
         base.OnBeforeRender(capi, stack, target, ref info);
         if (target != EnumItemRenderTarget.HandTp || !ReferenceEquals(capi.World.Player.InventoryManager.ActiveHotbarSlot.Itemstack, stack)) return;
+        if (calibrationTransform != null)
+        {
+            info.Transform = calibrationTransform.Clone();
+            return;
+        }
         info.Transform = info.Transform.Clone();
         long now = capi.World.ElapsedMilliseconds;
         int rounds = Rounds(stack);
