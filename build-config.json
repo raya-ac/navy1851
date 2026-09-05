@@ -1,5 +1,5 @@
 {
-  "gameVersion": "1.22.7",
-  "serverUrl": "https://cdn.vintagestory.at/gamefiles/stable/vs_server_linux-x64_1.22.7.tar.gz",
-  "serverSha256": "a7d4a520604590a96de812ee6c6baf4404d43d86cf1ec4fbac1b3a580b52c847"
+  "gameVersion": "1.22.3",
+  "serverUrl": "https://cdn.vintagestory.at/gamefiles/stable/vs_server_linux-x64_1.22.3.tar.gz",
+  "serverSha256": "eae3a29f580ca9e4334e2f9aa12cbdbca48da19ed250cc8d679347f52e9ae772"
 }

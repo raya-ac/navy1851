@@ -1,12 +1,12 @@
 # navy 1851
 
-[![build](https://github.com/raya-ac/navy1851/actions/workflows/build.yml/badge.svg)](https://github.com/raya-ac/navy1851/actions/workflows/build.yml)
+[![build](https://github.com/raya-ac/navy1851/actions/workflows/build.yml/badge.svg?branch=vs1.22.3)](https://github.com/raya-ac/navy1851/actions/workflows/build.yml)
 
 i wanted a colt navy in vintage story, with a model that actually looked like one. this is my take on the 1851: a long octagonal barrel, engraved cylinder, brass frame and a curved walnut grip.
 
 it holds six rounds. hold right mouse and it keeps firing until you let go or run out. sneak and hold right mouse to load it again, one charge at a time. the ammo count stays with the gun when you move it or save the world.
 
-this is for **vintage story 1.22.7**. it builds against the real game API and has automated checks, but i haven't tested it in the game client yet. the hand placement and multiplayer behaviour still need that pass.
+this branch is for **vintage story 1.22.3**. download the zip ending in `vs1.22.3.zip`; the 1.22.7 build is a separate download. it builds against the real game API and has automated checks, but i haven't tested it in the game client yet. the hand placement and multiplayer behaviour still need that pass.
 
 ## get it
 
@@ -36,7 +36,7 @@ you need **python 3.10+** and the **.NET 10.0.400 SDK** (or a later patch in tha
 python3 tools/build.py
 ```
 
-that downloads the pinned official 1.22.7 server archive, verifies its checksum, takes the three reference DLLs it needs, builds the mod, runs the checks and writes the installable zip to `dist/`. it doesn't launch the server or bundle the game's DLLs. no NuGet packages are needed.
+that downloads the pinned official 1.22.3 server archive, verifies its checksum, takes the three reference DLLs it needs, builds the mod, runs the checks and writes the installable zip to `dist/`. it doesn't launch the server or bundle the game's DLLs. no NuGet packages are needed.
 
 if you already have the game installed:
 

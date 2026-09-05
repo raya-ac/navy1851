@@ -52,6 +52,8 @@ using(var stream=new MemoryStream()){
  Check(restored.GetInt("navy1851:rounds")==4,"Rounds survive the actual API attribute binary roundtrip");
 }
 string root=Path.GetFullPath(args[0]);
+string targetVersion=JObject.Parse(File.ReadAllText(Path.Combine(root,"modinfo.json")))["dependencies"]!["game"]!.ToString();
+Check(typeof(Item).Assembly.GetName().Version!.ToString(3) == targetVersion, "Checks run against the exact game version declared in modinfo");
 var log=DispatchProxy.Create<ILogger, Stub>();
 ((Stub)(object)log).Handler=(m,a)=>{if(m.Name is "Error" or "Fatal" or "Warning")throw new Exception(m.Name+": "+string.Join(" ",a??[]));return null;};
 var allItems=new Dictionary<string,Item>();
